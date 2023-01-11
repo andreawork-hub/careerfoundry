@@ -1,0 +1,4 @@
+{"_id":{"$oid":"63bd54ba094395ecfd6259ef"},"Username":"larissamayer","Password":"password5555","Email":"larissalove@yahoo.com","Birthday":"1990-03-29","FavoriteMovies":[],"Featured":true}
+{"_id":{"$oid":"63bd54ba094395ecfd6259f0"},"Username":"alexkiry1212","Password":"password777","Email":"alexkiry@yahoo.com","Birthday":"1992-12-12","FavoriteMovies":[],"Featured":true}
+{"_id":{"$oid":"63bd54ba094395ecfd6259f1"},"Username":"davidcohen2580","Password":"Test123","Email":"davidcohen2580@yahoo.com","Birthday":"1995-04-05","FavoriteMovies":[],"Featured":true}
+{"_id":{"$oid":"63bd54bc094395ecfd6259f2"},"Username":"annamusterman","Password":"anna321","Email":"annam@yahoo.com","Birthday":"1990-04-05","FavoriteMovies":[],"Featured":true}
