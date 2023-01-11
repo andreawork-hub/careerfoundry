@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // setup the logger
 app.use(morgan('combined', { stream: accessLogStream }));
 app.use(express.static('public'));
-/*
+
 let users = [
     {
         id: 1,
@@ -37,7 +37,7 @@ let users = [
 
     }
 ]
-*/
+
 let movies = [
     {
         Title: 'Silence of the Lambs',
