@@ -10,8 +10,9 @@ const mongoose = require('mongoose');
 const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
-mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
+mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.set('strictQuery', true);
 // create a write stream (in append mode), log.txt file is created in root directory
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
 
@@ -23,72 +24,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // setup the logger
 app.use(morgan('combined', { stream: accessLogStream }));
 app.use(express.static('public'));
-
-let users = [
-    {
-        id: 1,
-        name: "larissamayer",
-        favoriteMovies: []
-    },
-    {
-        id: 2,
-        name: "Joe",
-        favoriteMovies: ["Miss Sloane"]
-
-    }
-]
-
-let movies = [
-    {
-        Title: 'Silence of the Lambs',
-        Description: 'A young FBI cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer.',
-        Genre: {
-            Name: 'Thriller',
-            Description: 'Thriller film, also known as suspense film or suspense thriller, is a broad film genre that involves excitement and suspense in the audience.',
-        },
-        Director: {
-            Name: 'Jonathan Demme',
-            Bio: 'Robert Jonathan Demme was an American director, producer, and screenwriter.',
-            Birth: '1944',
-            Death: '2017'
-        },
-        ImagePath: 'silenceofthelambs.png',
-        Featured: true
-    },
-    {
-        Title: 'Something\’s Gotta Give',
-        Description: 'A swinger on the cusp of being a senior citizen with a taste for young women falls in love with an accomplished woman closer to his age.',
-        Genre: {
-            Name: 'Comedy',
-            Description: 'Comedy is a genre of film in which the main emphasis is on humor. These films are designed to make the audience laugh through amusement and most often work by exaggerating characteristics for humorous effect.',
-        },
-        Director: {
-            Name: 'Nancy Meyers',
-            Bio: 'Nancy Jane Meyers is an American filmmaker.',
-            Birth: '1949',
-        },
-        ImagePath:
-            'https://www.imdb.com/title/tt0337741/mediaviewer/rm104338688/?ref_=tt_ov_i',
-        Featured: true
-    },
-    {
-
-        Title: 'Miss Sloane',
-        Description: 'In the high-stakes world of political power-brokers, Elizabeth Sloane is the most sought after and formidable lobbyist in D.C. But when taking on the most powerful opponent of her career, she finds winning may come at too high a price.',
-        Genre: {
-            Name: 'Thriller',
-            Description: 'Thriller film, also known as suspense film or suspense thriller, is a broad film genre that involves excitement and suspense in the audience.',
-        },
-        Director: {
-            Name: 'John Madden',
-            Bio: 'John Philip Madden is an English director of stage, film, television, and radio.',
-            Birth: '1982',
-        },
-        ImagePath: 'https://www.imdb.com/title/tt4540710/mediaviewer/rm2662272000/?ref_=tt_ov_i',
-        Featured: true
-
-    }
-];
 
 //CREATE
 //Add a user
@@ -126,62 +61,95 @@ app.post('/users', (req, res) => {
         });
 });
 
-//UPDATE
-app.put('/users/:id', (req, res) => {
-    const { id } = req.params;
-    const updatedUser = req.body;
+// READ 
+// Get all users
+app.get('/users', (req, res) => {
+    Users.find()
+        .then((users) => {
+            res.status(201).json(users);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+});
 
-    let user = users.find(user => user.id == id);
+// Get a user by username
+app.get('/users/:Username', (req, res) => {
+    Users.findOne({ Username: req.params.Username })
+        .then((user) => {
+            res.json(user);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+});
 
-    if (user) {
-        user.name = updatedUser.name;
-        res.status(200).json(user)
-    } else {
-        res.status(400).send('no such user')
-    }
-})
+// Update a user's info, by username
+/* We’ll expect JSON in this format
+{
+  Username: String,
+  (required)
+  Password: String,
+  (required)
+  Email: String,
+  (required)
+  Birthday: Date
+}*/
+app.put('/users/:Username', (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username },
+        {
+            $set:
+            {
+                Username: req.body.Username,
+                Password: req.body.Password,
+                Email: req.body.Email,
+                Birthday: req.body.Birthday
+            }
+        },
+        { new: true }, // This line makes sure that the updated document is returned
+        (err, updatedUser) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Error: ' + err);
+            } else {
+                res.json(updatedUser);
+            }
+        });
+});
 
-//CREATE
-app.post('/users/:id/:movieTitle', (req, res) => {
-    const { id, movieTitle } = req.params;
+// Add a movie to a user's list of favorites
+app.post('/users/:Username/movies/:MovieID', (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username }, {
+        $push: { FavoriteMovies: req.params.MovieID }
+    },
+        { new: true }, // This line makes sure that the updated document is returned
+        (err, updatedUser) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Error: ' + err);
+            } else {
+                res.json(updatedUser);
+            }
+        });
+});
 
-    let user = users.find(user => user.id == id);
-
-    if (user) {
-        user.favoriteMovies.push(movieTitle);
-        res.status(200).send(`${movieTitle} has been added to user ${id}'s array`);
-    } else {
-        res.status(400).send('no such user')
-    }
-})
-
-//DELETE
-app.delete('/users/:id/:movieTitle', (req, res) => {
-    const { id, movieTitle } = req.params;
-
-    let user = users.find(user => user.id == id);
-
-    if (user) {
-        user.favoriteMovies = user.favoriteMovies.filter(title => title !== movieTitle);
-        res.status(200).send(`${movieTitle} has been removed from ${id}'s array`);
-    } else {
-        res.status(400).send('no such user')
-    }
-})
-
-//DELETE
-app.delete('/users/:id', (req, res) => {
-    const { id } = req.params;
-
-    let user = users.find(user => user.id == id);
-
-    if (user) {
-        users = users.filter(user => user.id != id);
-        res.status(200).send(`user ${id} has been deleted`);
-    } else {
-        res.status(400).send('no such user')
-    }
-})
+// Delete a user by username
+app.delete('/users/:Username', (req, res) => {
+    Users.findOneAndRemove({ Username: req.params.Username })
+        .then((user) => {
+            if (!user) {
+                res.status(400).send(req.params.Username + ' was not found');
+            } else {
+                res.status(200).send(req.params.Username + ' was deleted.');
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+});
 
 // READ
 app.get('/', (req, res) => {
@@ -189,41 +157,50 @@ app.get('/', (req, res) => {
 });
 
 app.get('/movies', (req, res) => {
-    res.status(200).json(movies);
-})
+    Movies.find()
+        .then((movies) => {
+            res.status(201).json(movies);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+});
 
-app.get('/movies/:title', (req, res) => {
-    const { title } = req.params;
-    const movie = movies.find(movie => movie.Title === title);
+app.get('/movies/:Title', (req, res) => {
+    Movies.findOne({ Title: req.params.Title })
+        .then((movie) => {
+            res.json(movie);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+});
 
-    if (movie) {
-        res.status(200).json(movie);
-    } else {
-        res.status(400).send('no such movie')
-    }
-})
 
-app.get('/movies/genre/:genreName', (req, res) => {
-    const { genreName } = req.params;
-    const genre = movies.find(movie => movie.Genre.Name === genreName).Genre;
+app.get('/movies/genres/:Name', (req, res) => {
+    Movies.findOne({ 'Genre.Name': req.params.Name })
+        .then((movies) => {
+            res.json(movies.Genre);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+});
 
-    if (genre) {
-        res.status(200).json(genre);
-    } else {
-        res.status(400).send('no such genre')
-    }
-})
+app.get('/movies/directors/:Name', (req, res) => {
+    Movies.findOne({ 'Director.Name': req.params.Name })
+        .then((movies) => {
+            res.json(movies.Director);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
+        });
+});
 
-app.get('/movies/directors/:directorName', (req, res) => {
-    const { directorName } = req.params;
-    const director = movies.find(movie => movie.Director.Name === directorName).Director;
-
-    if (director) {
-        res.status(200).json(director);
-    } else {
-        res.status(400).send('no such director')
-    }
-})
 app.get('/documentation', (req, res) => {
     res.sendFile('public/documentation.html', { root: __dirname });
 });
