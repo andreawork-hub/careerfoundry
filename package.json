@@ -1,5 +1,5 @@
 {
-  "name": "careerfoundry",
+  "name": "movie-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andreawork-hub/careerfoundry.git"
+    "url": "git+https://github.com/andreawork-hub/movie-api.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/andreawork-hub/careerfoundry/issues"
+    "url": "https://github.com/andreawork-hub/movie-api/issues"
   },
-  "homepage": "https://github.com/andreawork-hub/careerfoundry#readme",
+  "homepage": "https://github.com/andreawork-hub/movie-api#readme",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
