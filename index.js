@@ -13,7 +13,7 @@ const Models = require('./models.js');
 const Movies = Models.Movie;
 const Users = Models.User;
 
-mongoose.connect();
+//mongoose.connect();
 mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.set('strictQuery', true);
 // create a write stream (in append mode), log.txt file is created in root directory
