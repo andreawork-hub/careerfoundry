@@ -165,6 +165,22 @@ app.post('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { sess
         });
 });
 
+// Delete a movie to a user's list of favorites
+app.delete('/users/:Username/movies/:MovieID', passport.authenticate('jwt', { session: false }), (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username }, {
+        $pull: { FavoriteMovies: req.params.MovieID }
+    },
+        { new: true }, // This line makes sure that the updated document is returned
+        (err, updatedUser) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Error: ' + err);
+            } else {
+                res.json(updatedUser);
+            }
+        });
+});
+
 // Delete a user by username
 app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res) => {
     Users.findOneAndRemove({ Username: req.params.Username })
@@ -186,7 +202,7 @@ app.get('/', (req, res) => {
     res.send('Welcome to myFlix!');
 });
 
-app.get('/movies', (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), (req, res) => {
     Movies.find()
         .then((movies) => {
             res.status(201).json(movies);
@@ -197,7 +213,7 @@ app.get('/movies', (req, res) => {
         });
 });
 
-app.get('/movies/:Title', (req, res) => {
+app.get('/movies/:Title', passport.authenticate('jwt', { session: false }), (req, res) => {
     Movies.findOne({ Title: req.params.Title })
         .then((movie) => {
             res.json(movie);
@@ -209,7 +225,7 @@ app.get('/movies/:Title', (req, res) => {
 });
 
 
-app.get('/movies/genres/:Name', (req, res) => {
+app.get('/movies/genres/:Name', passport.authenticate('jwt', { session: false }), (req, res) => {
     Movies.findOne({ 'Genre.Name': req.params.Name })
         .then((movies) => {
             res.json(movies.Genre);
@@ -220,7 +236,7 @@ app.get('/movies/genres/:Name', (req, res) => {
         });
 });
 
-app.get('/movies/directors/:Name', (req, res) => {
+app.get('/movies/directors/:Name', passport.authenticate('jwt', { session: false }), (req, res) => {
     Movies.findOne({ 'Director.Name': req.params.Name })
         .then((movies) => {
             res.json(movies.Director);
