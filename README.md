@@ -1,6 +1,61 @@
-# movie-api
- The web application will provide users with access to information about different movies, directors, and genres. Users will be able to sign up, update their personal information, and create a list of their favorite movies.
+📗 Table of Contents
+•	📖 About the Project
+•	🛠 Built With
+•	🚀 Live Demo
+•	💻 Getting Started
+•	👥 Authors
+•	🤝 Contributing
 
-User can access the app via link:
 
-https://nea-myflix.netlify.app
+📖 [myFlix] 
+-----
+[myFlix] is a complete server-side of the myFlix application. It including the server, business logic, and business layers of the application. It consists of a well-designed REST API and architected database built using JavaScript, Node.js, Express, and MongoDB. The REST API will be accessed via commonly used HTTP methods like GET and POST. Similar methods (CRUD) will be used to retrieve data from your database and store that data in a non-relational way.
+
+🛠 Built With 
+-----
+
+- The API is a Node.js and Express application.
+- Uses REST architecture, with URL endpoints.
+- Uses at least three middleware modules, such as the body-parser package for reading data from requests and morgan for logging.
+- Business logic is modeled with Mongoose.
+- Proides movie information in JSON format.
+- Includes user authentication and authorization code
+- Includes data validation logic.
+- Meets data security regulations.
+- The database is built using MongoDB.
+
+User Stories
+- As a user, I want to be able to receive information on movies, directors, and genres so that I can learn more about movies I’ve watched or am interested in.
+- As a user, I want to be able to create a profile so I can save data about my favorite movies.
+
+🚀 Live Demo 
+-----
+•	Live Demo Link: https://nea-myflix.netlify.app
+
+💻 Getting Started 
+-----
+To install packages: 
+See package.json file. 
+
+To run the project, execute the following command:
+npm run dev
+
+Run tests in Postman.
+To see the endpoints, visit the the website: https://movie-api-lnmw.onrender.com/documentation .  
+
+You can deploy this project using: Render. 
+
+👥 Authors 
+-----
+👤 Andrea V.
+
+GitHub: @andreawork-hub
+
+🤝 Contributing 
+-----
+Contributions, issues, and feature requests are welcome!
+Feel free to check the issues page.
+
+
+
+
